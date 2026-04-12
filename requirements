@@ -5,3 +5,4 @@ numpy
 pandas
 matplotlib
 do pip install datasets
+pip install transformers torch
