@@ -1,0 +1,12 @@
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
+
+def train_logistic(X, y):
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X, y)
+    return model
+
+def train_svm(X, y):
+    model = LinearSVC()
+    model.fit(X, y)
+    return model

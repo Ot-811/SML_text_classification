@@ -1,0 +1,13 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+def get_tfidf_features(train_texts, test_texts):
+    vectorizer = TfidfVectorizer(
+        max_features=5000,
+        ngram_range=(1,2),
+        stop_words='english'
+    )
+
+    X_train = vectorizer.fit_transform(train_texts)
+    X_test = vectorizer.transform(test_texts)
+
+    return X_train, X_test
