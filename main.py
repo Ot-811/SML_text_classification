@@ -6,6 +6,7 @@ from src.tfidf import get_tfidf_features
 from src.models import train_logistic, train_svm
 from src.evaluate import evaluate_model
 from src.embeddings import get_embeddings
+from src.models import train_knn
 
 def run_tfidf_pipeline():
     dataset = load_dataset("imdb")
@@ -28,6 +29,10 @@ def run_tfidf_pipeline():
     model_svm = train_svm(X_train, y_train)
     acc, f1 = evaluate_model(model_svm, X_test, y_test)
     print(f"SVM → Accuracy: {acc:.4f}, F1: {f1:.4f}")
+
+    model_knn = train_knn(X_train, y_train)
+    acc, f1 = evaluate_model(model_knn, X_test, y_test)
+    print(f"KNN → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
 def run_embedding_pipeline():
 
@@ -55,15 +60,17 @@ def run_embedding_pipeline():
     y_train = y_train[:2000]
     y_test = y_test[:2000]
 
-    print("Training Logistic Regression...")
     model_lr = train_logistic(X_train, y_train)
     acc, f1 = evaluate_model(model_lr, X_test, y_test)
     print(f"Embeddings + Logistic → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
-    print("Training SVM...")
     model_svm = train_svm(X_train, y_train)
     acc, f1 = evaluate_model(model_svm, X_test, y_test)
     print(f"Embeddings + SVM → Accuracy: {acc:.4f}, F1: {f1:.4f}")
+
+    model_knn = train_knn(X_train, y_train)
+    acc, f1 = evaluate_model(model_knn, X_test, y_test)
+    print(f"Embeddings + KNN → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
