@@ -7,6 +7,8 @@ from src.models import train_logistic, train_svm
 from src.evaluate import evaluate_model
 from src.embeddings import get_embeddings
 from src.models import train_knn
+from src.models import train_kmeans
+from src.evaluate import evaluate_kmeans
 
 def run_tfidf_pipeline():
     dataset = load_dataset("imdb")
@@ -34,6 +36,10 @@ def run_tfidf_pipeline():
     acc, f1 = evaluate_model(model_knn, X_test, y_test)
     print(f"KNN → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
+    kmeans = train_kmeans(X_train)
+    acc = evaluate_kmeans(kmeans, X_test, y_test)
+    print(f"KMeans → Accuracy: {acc:.4f}")
+
 def run_embedding_pipeline():
 
     dataset = load_dataset("imdb")
@@ -52,10 +58,12 @@ def run_embedding_pipeline():
     y_train = [x["label"] for x in train_data]
     y_test = [x["label"] for x in test_data]
 
-    print("Extracting embeddings (this may take time)...")
+    print("Extracting embedding (takes time)...")
 
     X_train = get_embeddings(train_texts, max_samples=2000)
     X_test = get_embeddings(test_texts, max_samples=2000)
+
+    print("Embeddings extracted. Evaluating models...")
 
     y_train = y_train[:2000]
     y_test = y_test[:2000]
@@ -71,6 +79,10 @@ def run_embedding_pipeline():
     model_knn = train_knn(X_train, y_train)
     acc, f1 = evaluate_model(model_knn, X_test, y_test)
     print(f"Embeddings + KNN → Accuracy: {acc:.4f}, F1: {f1:.4f}")
+
+    kmeans = train_kmeans(X_train)
+    acc = evaluate_kmeans(kmeans, X_test, y_test)
+    print(f"Embeddings + KMeans → Accuracy: {acc:.4f}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
