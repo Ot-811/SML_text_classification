@@ -7,7 +7,6 @@ def apply_pca(X, n_components):
     X_reduced = pca.fit_transform(X)
     return X_reduced, pca
 
-
 def plot_pca_2d(X, y, title, save_path):
     pca = PCA(n_components=2)
     X_reduced = pca.fit_transform(X)
@@ -29,7 +28,6 @@ def plot_pca_2d(X, y, title, save_path):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
 
-
 def plot_explained_variance(X, save_path):
     pca = PCA().fit(X)
 
@@ -41,4 +39,27 @@ def plot_explained_variance(X, save_path):
 
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     plt.savefig(save_path)
+    plt.close()
+
+def accuracy_vs_pca(X, y, model_fn, dims_list, title, save_path):
+    accuracies = []
+
+    for dim in dims_list:
+        pca = PCA(n_components=dim)
+        X_reduced = pca.fit_transform(X)
+
+        model = model_fn(X_reduced, y)
+        y_pred = model.predict(X_reduced)
+
+        acc = (y_pred == y).mean()
+        accuracies.append(acc)
+
+    plt.figure(figsize=(8, 6), dpi=150)
+    plt.plot(dims_list, accuracies, marker='o')
+    plt.title(title)
+    plt.xlabel("Number of Components")
+    plt.ylabel("Accuracy")
+
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()

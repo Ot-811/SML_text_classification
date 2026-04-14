@@ -10,12 +10,19 @@ from src.models import train_knn
 from src.models import train_kmeans
 from src.evaluate import evaluate_kmeans
 from src.pca import plot_pca_2d, plot_explained_variance
+from src.pca import accuracy_vs_pca
+import numpy as np
 
 def run_tfidf_pipeline():
     dataset = load_dataset("imdb")
 
-    train_data = dataset["train"]
-    test_data = dataset["test"]
+    train_data = list(dataset["train"])
+    test_data = list(dataset["test"])
+
+    random.seed(42)
+
+    random.shuffle(train_data)
+    random.shuffle(test_data)
 
     train_texts = [clean_text(x["text"]) for x in train_data]
     test_texts = [clean_text(x["text"]) for x in test_data]
@@ -57,6 +64,17 @@ def run_tfidf_pipeline():
         X_small,
         "results/plots/tfidf_variance.png"
     )
+
+    accuracy_vs_pca(
+        X_small,
+        y_small,
+        train_logistic,
+        dims_list=[50, 100, 200, 300],
+        title="TF-IDF: Accuracy vs PCA Dimensions",
+        save_path="results/plots/tfidf_acc_pca.png"
+    )
+
+    
 
 def run_embedding_pipeline():
 
@@ -108,10 +126,21 @@ def run_embedding_pipeline():
         "Embeddings PCA (2D)",
         "results/plots/embedding_pca.png"
     )
-
     plot_explained_variance(
         X_train,
         "results/plots/embedding_variance.png"
+    )
+
+    X_small = X_train[:2000]
+    y_small = y_train[:2000]
+
+    accuracy_vs_pca(
+        X_small,
+        y_small,
+        train_logistic,
+        dims_list=[50, 100, 200, 300],
+        title="TF-IDF: Accuracy vs PCA Dimensions",
+        save_path="results/plots/tfidf_acc_pca.png"
     )
 
 
