@@ -9,6 +9,7 @@ from src.embeddings import get_embeddings
 from src.models import train_knn
 from src.models import train_kmeans
 from src.evaluate import evaluate_kmeans
+from src.pca import plot_pca_2d, plot_explained_variance
 
 def run_tfidf_pipeline():
     dataset = load_dataset("imdb")
@@ -40,6 +41,23 @@ def run_tfidf_pipeline():
     acc = evaluate_kmeans(kmeans, X_test, y_test)
     print(f"KMeans → Accuracy: {acc:.4f}")
 
+    print("PCA:")
+
+    X_small = X_train[:2000].toarray()
+    y_small = y_train[:2000]
+
+    plot_pca_2d(
+        X_small,
+        y_small,
+        "TF-IDF PCA (2D)",
+        "results/plots/tfidf_pca.png"
+    )
+
+    plot_explained_variance(
+        X_small,
+        "results/plots/tfidf_variance.png"
+    )
+
 def run_embedding_pipeline():
 
     dataset = load_dataset("imdb")
@@ -49,8 +67,6 @@ def run_embedding_pipeline():
 
     random.shuffle(train_data)
     random.shuffle(test_data)
-
-    print("Preprocessing text...")
 
     train_texts = [clean_text(x["text"]) for x in train_data]
     test_texts = [clean_text(x["text"]) for x in test_data]
@@ -83,6 +99,23 @@ def run_embedding_pipeline():
     kmeans = train_kmeans(X_train)
     acc = evaluate_kmeans(kmeans, X_test, y_test)
     print(f"Embeddings + KMeans → Accuracy: {acc:.4f}")
+
+    print("PCA:")
+
+    plot_pca_2d(
+        X_train,
+        y_train,
+        "Embeddings PCA (2D)",
+        "results/plots/embedding_pca.png"
+    )
+
+    plot_explained_variance(
+        X_train,
+        "results/plots/embedding_variance.png"
+    )
+
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
