@@ -24,7 +24,7 @@ def run_tsne(X, perplexity=30, n_iter=1000):
     tsne = TSNE(
         n_components=2,
         perplexity=perplexity,
-        n_iter=n_iter,
+        max_iter=n_iter,
         random_state=42,
         verbose=1
     )
