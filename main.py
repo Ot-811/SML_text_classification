@@ -118,6 +118,9 @@ def run_embedding_pipeline():
 
         X_train = get_embeddings(train_texts)
 
+        X_train_cls = get_embeddings(train_texts, batch_size=32, mode="cls")
+        X_test_cls = get_embeddings(test_texts, batch_size=32, mode="cls")
+
         np.savez("results/embeddings_train.npz", X=X_train)
         np.save("results/y_train.npy", y_train)
 
@@ -134,8 +137,30 @@ def run_embedding_pipeline():
 
         X_test = get_embeddings(test_texts)
 
+        X_train_cls = get_embeddings(train_texts, batch_size=32, mode="cls")
+        X_test_cls = get_embeddings(test_texts, batch_size=32, mode="cls")
+
         np.savez("results/embeddings_test.npz", X=X_test)
         np.save("results/y_test.npy", y_test)
+
+    print("\nPreparing CLS embeddings...")
+
+    if os.path.exists("results/embeddings_train_cls.npz"):
+        print("Loading saved CLS TRAIN embeddings...")
+        X_train_cls = np.load("results/embeddings_train_cls.npz")["X"]
+    else:
+        print("Extracting CLS TRAIN embeddings...")
+        X_train_cls = get_embeddings(train_texts, mode="cls")
+        np.savez("results/embeddings_train_cls.npz", X=X_train_cls)
+
+
+    if os.path.exists("results/embeddings_test_cls.npz"):
+        print("Loading saved CLS TEST embeddings...")
+        X_test_cls = np.load("results/embeddings_test_cls.npz")["X"]
+    else:
+        print("Extracting CLS TEST embeddings...")
+        X_test_cls = get_embeddings(test_texts, mode="cls")
+        np.savez("results/embeddings_test_cls.npz", X=X_test_cls)
 
     print("Embeddings extracted. Evaluating models...")
 
@@ -143,17 +168,33 @@ def run_embedding_pipeline():
     acc, f1 = evaluate_model(model_lr, X_test, y_test)
     print(f"Embeddings + Logistic → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
+    model_lr = train_logistic(X_train_cls, y_train)
+    acc, f1 = evaluate_model(model_lr, X_test_cls, y_test)
+    print(f"CLS + Logistic → Accuracy: {acc:.4f}, F1: {f1:.4f}")
+
     model_svm = train_svm(X_train, y_train)
     acc, f1 = evaluate_model(model_svm, X_test, y_test)
     print(f"Embeddings + SVM → Accuracy: {acc:.4f}, F1: {f1:.4f}")
+
+    model_svm = train_svm(X_train_cls, y_train)
+    acc, f1 = evaluate_model(model_svm, X_test_cls, y_test)
+    print(f"CLS + SVM → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
     model_knn = train_knn(X_train, y_train)
     acc, f1 = evaluate_model(model_knn, X_test, y_test)
     print(f"Embeddings + KNN → Accuracy: {acc:.4f}, F1: {f1:.4f}")
 
+    model_knn = train_knn(X_train_cls, y_train)
+    acc, f1 = evaluate_model(model_knn, X_test_cls, y_test)
+    print(f"CLS + KNN → Accuracy: {acc:.4f}, F1: {f1:.4f}")
+
     kmeans = train_kmeans(X_train)
     acc = evaluate_kmeans(kmeans, X_test, y_test)
     print(f"Embeddings + KMeans → Accuracy: {acc:.4f}")
+
+    kmeans = train_kmeans(X_train_cls)
+    acc = evaluate_kmeans(kmeans, X_test_cls, y_test)
+    print(f"CLS + KMeans → Accuracy: {acc:.4f}")
 
     print("PCA:")
 

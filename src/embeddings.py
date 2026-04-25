@@ -20,7 +20,7 @@ def mean_pooling(last_hidden_state, attention_mask):
     return sum_embeddings / sum_mask
 
 
-def get_embeddings(texts, batch_size=32, max_length=128):
+def get_embeddings(texts, batch_size=32, max_length=128, mode="mean"):
     embeddings = []
 
     print("[INFO] Generating embeddings...")
@@ -42,7 +42,10 @@ def get_embeddings(texts, batch_size=32, max_length=128):
             outputs = model(**inputs)
 
         last_hidden = outputs.last_hidden_state
-        pooled = mean_pooling(last_hidden, inputs["attention_mask"])
+        if mode == "mean":
+            pooled = mean_pooling(last_hidden, inputs["attention_mask"])
+        elif mode == "cls":
+            pooled = last_hidden[:, 0, :]
 
         embeddings.append(pooled.cpu().numpy())
 
