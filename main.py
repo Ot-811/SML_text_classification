@@ -14,6 +14,7 @@ from src.pca import plot_pca_2d, plot_explained_variance
 from src.pca import accuracy_vs_pca
 import numpy as np
 from src.visualize import generate_tsne_plot
+from tqdm import tqdm
 
 def run_tfidf_pipeline():
     dataset = load_dataset("imdb")
@@ -26,8 +27,8 @@ def run_tfidf_pipeline():
     random.shuffle(train_data)
     random.shuffle(test_data)
 
-    train_texts = [clean_text(x["text"]) for x in train_data]
-    test_texts = [clean_text(x["text"]) for x in test_data]
+    train_texts = [clean_text(x["text"]) for x in tqdm(train_data, desc="Cleaning train data")]
+    test_texts = [clean_text(x["text"]) for x in tqdm(test_data, desc="Cleaning test data")]
 
     y_train = [x["label"] for x in train_data]
     y_test = [x["label"] for x in test_data]
@@ -94,9 +95,9 @@ def run_embedding_pipeline():
     random.shuffle(train_data)
     random.shuffle(test_data)
 
-    train_texts = [clean_text(x["text"]) for x in train_data]
-    test_texts = [clean_text(x["text"]) for x in test_data]
-
+    train_texts = [clean_text(x["text"]) for x in tqdm(train_data, desc="Cleaning train data")]
+    test_texts = [clean_text(x["text"]) for x in tqdm(test_data, desc="Cleaning test data")]
+    
     y_train = [x["label"] for x in train_data]
     y_test = [x["label"] for x in test_data]
 
@@ -199,8 +200,6 @@ if __name__ == "__main__":
     elif args.mode == "embedding":
         run_embedding_pipeline()
     elif args.mode == "visualize":
-        print("Running visualization only...")
-
         X = np.load("results/embeddings_train.npz")["X"]
         y = np.load("results/y_train.npy")
 
