@@ -1,4 +1,5 @@
 import argparse
+import os
 from datasets import load_dataset
 import random
 from src.preprocessing import clean_text
@@ -12,6 +13,7 @@ from src.evaluate import evaluate_kmeans
 from src.pca import plot_pca_2d, plot_explained_variance
 from src.pca import accuracy_vs_pca
 import numpy as np
+from src.visualize import generate_tsne_plot
 
 def run_tfidf_pipeline():
     dataset = load_dataset("imdb")
@@ -74,6 +76,12 @@ def run_tfidf_pipeline():
         save_path="results/plots/tfidf_acc_pca.png"
     )
 
+    generate_tsne_plot(
+        X_train[:2000],
+        y_train[:2000],
+        "results/plots/tfidf_tsne.png"
+    )
+
     
 
 def run_embedding_pipeline():
@@ -94,13 +102,41 @@ def run_embedding_pipeline():
 
     print("Extracting embedding (takes time)...")
 
-    X_train = get_embeddings(train_texts, max_samples=2000)
-    X_test = get_embeddings(test_texts, max_samples=2000)
+
+    print("Preparing embeddings...")
+
+    if os.path.exists("results/embeddings_train.npz"):
+        print("Loading saved TRAIN embeddings...")
+        X_train = np.load("results/embeddings_train.npz")["X"]
+        y_train = np.load("results/y_train.npy")
+    else:
+        print("Extracting TRAIN embeddings...")
+        
+        train_texts = train_texts[:2000]
+        y_train = y_train[:2000]
+
+        X_train = get_embeddings(train_texts)
+
+        np.savez("results/embeddings_train.npz", X=X_train)
+        np.save("results/y_train.npy", y_train)
+
+
+    if os.path.exists("results/embeddings_test.npz"):
+        print("Loading saved TEST embeddings...")
+        X_test = np.load("results/embeddings_test.npz")["X"]
+        y_test = np.load("results/y_test.npy")
+    else:
+        print("Extracting TEST embeddings...")
+
+        test_texts = test_texts[:2000]
+        y_test = y_test[:2000]
+
+        X_test = get_embeddings(test_texts)
+
+        np.savez("results/embeddings_test.npz", X=X_test)
+        np.save("results/y_test.npy", y_test)
 
     print("Embeddings extracted. Evaluating models...")
-
-    y_train = y_train[:2000]
-    y_test = y_test[:2000]
 
     model_lr = train_logistic(X_train, y_train)
     acc, f1 = evaluate_model(model_lr, X_test, y_test)
@@ -139,8 +175,14 @@ def run_embedding_pipeline():
         y_small,
         train_logistic,
         dims_list=[50, 100, 200, 300],
-        title="TF-IDF: Accuracy vs PCA Dimensions",
-        save_path="results/plots/tfidf_acc_pca.png"
+        title="Embeddings: Accuracy vs PCA Dimensions",
+        save_path="results/plots/embedding_acc_pca.png"
+    )
+
+    generate_tsne_plot(
+        X_train[:2000],
+        y_train[:2000],
+        "results/plots/embedding_tsne.png"
     )
 
 
@@ -148,7 +190,7 @@ def run_embedding_pipeline():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=["tfidf", "embedding"], required=True)
+    parser.add_argument("--mode", choices=["tfidf", "embedding", "visualize"], required=True)
 
     args = parser.parse_args()
 
@@ -156,3 +198,14 @@ if __name__ == "__main__":
         run_tfidf_pipeline()
     elif args.mode == "embedding":
         run_embedding_pipeline()
+    elif args.mode == "visualize":
+        print("Running visualization only...")
+
+        X = np.load("results/embeddings_train.npz")["X"]
+        y = np.load("results/y_train.npy")
+
+        generate_tsne_plot(
+            X,
+            y,
+            "results/plots/embedding_tsne.png"
+        )

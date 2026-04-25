@@ -6,3 +6,5 @@ pandas
 matplotlib
 do pip install datasets
 pip install transformers torch
+
+To RUN : python main.py --mode tfidf ; python main.py --mode embedding
