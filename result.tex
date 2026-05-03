@@ -1,0 +1,49 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\begin{document}
+% =========================
+% TITLE PAGE
+% =========================
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge \textbf{International Institute Of Information Technology Bangalore}}\\[1 cm]
+{\Large AIM-102}\\[2cm]
+\textbf{Name:} Om Tripathi\\[0.5cm]
+\textbf{Roll Number:} BA2025027\\[0.5cm]
+\textbf{Batch:} BT DSAI\\[1.5cm]
+\textbf{Statistical Machine Learning}\\
+\textbf{Course Project}\\
+\vfill
+\end{titlepage}
+\newpage
+% =========================
+% INTRODUCTION
+% =========================
+\section{Introduction}
+Natural Language Processing (NLP) is widely used for analyzing textual data. In this project, we compare classical machine learning models using two different feature representations: TF-IDF (sparse features) and contextual embeddings generated using DistilBERT.
+The objective is to analyze how feature representation affects classification performance in sentiment analysis.
+% =========================
+% DATASET
+% =========================
+\section{Dataset Description and EDA}
+We use the IMDb dataset from Hugging Face, which is a binary classification dataset for sentiment analysis.
+\begin{itemize}
+    \item Number of samples used: 2000 (subset)
+    \item Classes: Positive and Negative
+\end{itemize}
+Basic exploratory data analysis (EDA) was performed, including class distribution and text length analysis.
+% =========================
+% METHODOLOGY
+% =========================
+\section{Methodology}
+\subsection{TF-IDF Features}
+Text preprocessing included cleaning and tokenization. TF-IDF vectorization was used to convert text into numerical feature vectors.
+\subsection{Embedding Features}
+We used DistilBERT as a pretrained encoder model to extract embeddings. The model was used strictly as a feature extractor without fine-tuning.
+Mean pooling was applied to obtain sentence-level embeddings.
+\subsection{Models}
+The following classical models were used:
+\end{document}
