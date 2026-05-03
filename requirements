@@ -1,10 +1,8 @@
-A laptop maybe
 datasets
+transformers
+torch
 scikit-learn
 numpy
 pandas
 matplotlib
-do pip install datasets
-pip install transformers torch
-
-To RUN : python main.py --mode tfidf ; python main.py --mode embedding ; python main.py --mode visualize
+tqdm
